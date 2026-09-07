@@ -1,0 +1,165 @@
+:root {
+    --primary: #2563eb;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --border: #e2e8f0;
+    --piket-bg: #dbeafe;
+    --piket-text: #1e40af;
+    --nginap-bg: #fef3c7;
+    --nginap-text: #92400e;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1, h2 { 
+    color: #1e293b; 
+}
+
+.card {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid var(--border);
+}
+
+.grid-config {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+label {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+input, textarea {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.stats-summary {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn:hover { 
+    background: #1d4ed8; 
+}
+
+/* Calendar Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.day-header {
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border);
+}
+
+.day-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--primary);
+}
+
+.day-date {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.slot-group {
+    margin-bottom: 10px;
+}
+
+.slot-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.slot-title.piket { color: var(--piket-text); }
+.slot-title.nginap { color: var(--nginap-text); }
+
+.duty-tag {
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.duty-tag.piket { 
+    background-color: var(--piket-bg); 
+    color: var(--piket-text); 
+}
+
+.duty-tag.nginap { 
+    background-color: var(--nginap-bg); 
+    color: var(--nginap-text); 
+}
+
+/* Summary Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+th { 
+    background-color: #f1f5f9; 
+}
