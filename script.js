@@ -21,8 +21,15 @@ const CONFIG = {
     maksimalPiketAgoy: 3,
     minimalPiketAgoy: 3,
 
-    // Hapus manifest swap Fras
-    tukarNginapKhusus: [],
+     tukarNginapKhusus: [
+        {
+            namaA: "Gibran",
+            tanggalA: 11,
+            namaB: "Haydar",
+            tanggalB: 12
+
+        }
+     ],
 
     daftarNama: [
         "Haydar", "Baihaqi", "Gibran", "Rafly", "Roket",
@@ -233,7 +240,7 @@ function cariKombinasiNginap(stats, tanggalJumat, tanggalSabtu) {
             const validKelompok = bolehBersamaNginap(person, timSaatIni);
             const belumDipilihHariIni = !timSaatIni.some(t => namaSama(t.name, person.name));
             const belumDipilihWeekendIni = !jumat.some(j => namaSama(j.name, person.name)) && 
-                                          !sabtu.some(s => namaSama(s.name, person.name));
+                                           !sabtu.some(s => namaSama(s.name, person.name));
 
             return validNginep && validKelompok && belumDipilihHariIni && belumDipilihWeekendIni;
         });
@@ -264,6 +271,20 @@ function cariKombinasiNginap(stats, tanggalJumat, tanggalSabtu) {
     for (let i = 0; i < CONFIG.nginapSabtu; i++) {
         const p = pilihPersonil(6, tanggalSabtu, sabtu);
         if (p) sabtu.push(p);
+    }
+
+    // ======================================================
+    // TUKAR KHUSUS: GIBRAN & HAYDAR (TANGGAL 11 & 12)
+    // ======================================================
+    if (tanggalJumat === 11 && tanggalSabtu === 12) {
+        const idxGibran = jumat.findIndex(p => namaSama(p.name, "Gibran"));
+        const idxHaydar = sabtu.findIndex(p => namaSama(p.name, "Haydar"));
+
+        if (idxGibran !== -1 && idxHaydar !== -1) {
+            const temp = jumat[idxGibran];
+            jumat[idxGibran] = sabtu[idxHaydar];
+            sabtu[idxHaydar] = temp;
+        }
     }
 
     return { jumat, sabtu };
@@ -393,6 +414,30 @@ function assignPiketBiasa(jumlah, stats, assignedToday, dayData, daftarPengecual
     }
 }
 
+
+// ======================================================
+// HELPER EKSTRA: TUKAR JADWAL NGINAP AUTOMATIC
+// ======================================================
+
+function eksekusiTukarJadwalNginap(scheduleData) {
+    if (!CONFIG.tukarNginapKhusus || CONFIG.tukarNginapKhusus.length === 0) return;
+
+    CONFIG.tukarNginapKhusus.forEach(rule => {
+        const itemA = scheduleData.find(d => d.day === rule.tanggalA);
+        const itemB = scheduleData.find(d => d.day === rule.tanggalB);
+
+        if (!itemA || !itemB) return;
+
+        const indexA = itemA.nginap.findIndex(nama => namaSama(nama, rule.namaA));
+        const indexB = itemB.nginap.findIndex(nama => namaSama(nama, rule.namaB));
+
+        // Melakukan Swap jika kedua entri ditemukan di tanggal masing-masing
+        if (indexA !== -1 && indexB !== -1) {
+            itemA.nginap[indexA] = rule.namaB;
+            itemB.nginap[indexB] = rule.namaA;
+        }
+    });
+}
 // ======================================================
 // GENERATE & RENDER HTML SCHEDULE
 // ======================================================
