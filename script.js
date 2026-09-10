@@ -16,13 +16,17 @@ const CONFIG = {
     // Senin - Kamis
     piketBiasa: 1,
 
+
     bobotAgoy: 0.6,
-    maksimalPiketAgoy: 4,
-    minimalPiketAgoy: 4,
-    
+    maksimalPiketAgoy: 3,
+    minimalPiketAgoy: 3,
+
+    // Hapus manifest swap Fras
+    tukarNginapKhusus: [],
+
     daftarNama: [
         "Haydar", "Baihaqi", "Gibran", "Rafly", "Roket",
-        "Lutfi", "Kausar", "Hakim", "Iksan",
+        "Lutfi", "Kausar", "Hakim", "Iksan", // "Fras" telah dihapus
         "Dimas", "Sultan", "Agoy", "Mirja", "Ridho"
     ]
 };
@@ -41,7 +45,7 @@ function pseudoRandom() {
 }
 
 // ======================================================
-// ATURAN DAN RESTRIKSI
+// ATURAN DAN RESTRIKSI (TANPA FRAS)
 // ======================================================
 
 const BOLEH_NGINAP = [
@@ -55,7 +59,7 @@ const TIDAK_BOLEH_NGINAP = ["Agoy", "Iksan", "Ridho"];
 const HANYA_NGINAP_JUMAT = ["Hakim", "Mirja", "Sultan", "Dimas"];
 
 // DILARANG PIKET/NGINAP KHUSUS TANGGAL 11 & 12
-const DILARANG_TGL_11_12 = ["Baihaqi", "Rafly", "Lutfi"];
+const DILARANG_TGL_11_12 = ["Baihaqi", "Rafly", "Lutfi", "Sultan", "Dimas"];
 
 const TIDAK_BOLEH_PIKET_WEEKEND = ["Iksan", "Ridho"];
 
@@ -160,6 +164,13 @@ function getJumlahPiketAgoyMinggu(stats, mingguKe) {
     return agoy.tanggalPiket.filter(tanggal => getMingguKe(tanggal) === mingguKe).length;
 }
 
+// BARU: cek apakah seseorang (siapa pun, bukan cuma Agoy) sudah piket
+// di minggu yang sama dengan tanggal yang sedang dicek. Dipakai untuk
+// menegakkan aturan "1 orang maksimal 1x piket per minggu".
+function sudahPiketMingguIni(person, mingguKe) {
+    return person.tanggalPiket.some(tLama => getMingguKe(tLama) === mingguKe);
+}
+
 function bolehPiketAgoy(stats, tanggal) {
     const agoy = getAgoy(stats);
     if (!agoy) return false;
@@ -190,6 +201,18 @@ function getSkorAgoy(stats, tanggal) {
     const jarak = tanggal - terakhir;
 
     return Math.max(0, 8 - jarak) + (agoy.piketCount * 2);
+}
+
+// ======================================================
+// GABUNG SET (untuk menggabungkan beberapa daftar exclude)
+// ======================================================
+
+function gabungkanSet(...sets) {
+    const hasil = new Set();
+    for (const s of sets) {
+        for (const item of s) hasil.add(item);
+    }
+    return hasil;
 }
 
 // ======================================================
@@ -277,79 +300,97 @@ function assignPiketWeekendAgoy(stats, dayData, assignedToday, orangNginapHariIn
     agoy.tanggalPiket.push(tanggal);
 }
 
-function assignPiketBiasa(jumlah, stats, assignedToday, dayData, orangNginapHariIni, hari) {
+function cariKandidatPiket(stats, assignedToday, orangDikecualikan, hari, tanggal) {
+    const mingguKe = getMingguKe(tanggal);
+
+    let candidates = stats.filter(person => {
+        if (namaSama(person.name, "Agoy") && person.piketCount >= CONFIG.maksimalPiketAgoy) return false;
+        if (assignedToday.has(person.name)) return false;
+        if (orangDikecualikan.has(person.name)) return false; 
+        if (!bolehPiket(person, hari, tanggal)) return false;
+
+        // BARU: 1 orang maksimal 1x piket per minggu.
+        if (sudahPiketMingguIni(person, mingguKe)) return false;
+
+        if (namaSama(person.name, "Agoy")) {
+            if (!bolehPiketAgoy(stats, tanggal)) return false;
+        }
+
+        return true;
+    });
+
+    candidates.sort((a, b) => {
+        const aAgoy = namaSama(a.name, "Agoy");
+        const bAgoy = namaSama(b.name, "Agoy");
+
+        if (aAgoy && !bAgoy) {
+            if (getSkorAgoy(stats, tanggal) <= 2) return -1;
+        }
+        if (bAgoy && !aAgoy) {
+            if (getSkorAgoy(stats, tanggal) <= 2) return 1;
+        }
+
+        // PRIORITAS UTAMA: piketCount paling sedikit duluan.
+        // Ini mencegah orang yang sering nginap (mis. Hakim, Haydar) terus-menerus
+        // kalah prioritas piket hanya karena beban gabungan mereka (nginap dihitung x2)
+        // kelihatan lebih besar dibanding orang yang memang tidak bisa nginap (Iksan/Ridho/Agoy).
+        if (a.piketCount !== b.piketCount) return a.piketCount - b.piketCount;
+
+        // Tie-breaker: kalau piketCount sama, baru pertimbangkan beban total (piket+nginap*2)
+        // supaya orang yang sudah banyak nginap tetap diprioritaskan lebih rendah dibanding
+        // yang belum pernah nginap sama sekali.
+        const bebanA = getBeban(a);
+        const bebanB = getBeban(b);
+        if (bebanA !== bebanB) return bebanA - bebanB;
+
+        if (a.nginapCount !== b.nginapCount) return a.nginapCount - b.nginapCount;
+
+        return pseudoRandom() - 0.5;
+    });
+
+    return candidates;
+}
+
+// daftarPengecualianBertingkat: array of Set, dari PALING KETAT ke PALING LONGGAR.
+// Dicoba satu-satu; begitu ada kandidat ditemukan, langsung dipakai.
+// Ini mencegah slot piket kosong akibat aturan-aturan "lunak" (seperti larangan
+// nginap minggu lalu) saling menumpuk sampai kandidat habis. Aturan keras
+// (bolehPiket, larangan tanggal, larangan piket weekend, nginap hari yang sama)
+// TETAP selalu berlaku di semua tingkat karena ada di cariKandidatPiket().
+function assignPiketBiasa(jumlah, stats, assignedToday, dayData, daftarPengecualianBertingkat, hari) {
+    const tingkatan = Array.isArray(daftarPengecualianBertingkat)
+        ? daftarPengecualianBertingkat
+        : [daftarPengecualianBertingkat];
+
     for (let i = 0; i < jumlah; i++) {
         const tanggal = dayData.day;
+        let selected = null;
+        let levelDipakai = -1;
 
-        let candidates = stats.filter(person => {
-            if (namaSama(person.name, "Agoy") && person.piketCount >= CONFIG.maksimalPiketAgoy) return false;
-            if (assignedToday.has(person.name)) return false;
-            if (orangNginapHariIni.has(person.name)) return false; 
-            if (!bolehPiket(person, hari, tanggal)) return false;
-
-            if (namaSama(person.name, "Agoy")) {
-                if (!bolehPiketAgoy(stats, tanggal)) return false;
+        for (let lvl = 0; lvl < tingkatan.length; lvl++) {
+            const candidates = cariKandidatPiket(stats, assignedToday, tingkatan[lvl], hari, tanggal);
+            if (candidates.length > 0) {
+                selected = candidates[0];
+                levelDipakai = lvl;
+                break;
             }
+        }
 
-            return true;
-        });
+        if (!selected) {
+            console.warn(`[PIKET KOSONG] Tanggal ${tanggal}: tidak ada kandidat piket sama sekali (semua orang habis walau sudah dilonggarkan).`);
+            continue;
+        }
 
-        candidates.sort((a, b) => {
-            const aAgoy = namaSama(a.name, "Agoy");
-            const bAgoy = namaSama(b.name, "Agoy");
-
-            if (aAgoy && !bAgoy) {
-                if (getSkorAgoy(stats, tanggal) <= 2) return -1;
-            }
-            if (bAgoy && !aAgoy) {
-                if (getSkorAgoy(stats, tanggal) <= 2) return 1;
-            }
-
-            const bebanA = getBeban(a);
-            const bebanB = getBeban(b);
-            if (bebanA !== bebanB) return bebanA - bebanB;
-            if (a.piketCount !== b.piketCount) return a.piketCount - b.piketCount;
-            if (a.nginapCount !== b.nginapCount) return a.nginapCount - b.nginapCount;
-
-            return pseudoRandom() - 0.5;
-        });
-
-        const selected = candidates[0];
-        if (!selected) continue;
+        if (levelDipakai > 0) {
+            console.warn(`[FALLBACK] Tanggal ${tanggal}: aturan exclude dilonggarkan ke level ${levelDipakai} agar ${selected.name} bisa piket.`);
+        }
 
         dayData.piket.push(selected.name);
         assignedToday.add(selected.name);
         selected.piketCount++;
         selected.total++;
-
-        if (namaSama(selected.name, "Agoy")) {
-            selected.tanggalPiket.push(tanggal);
-        }
+        selected.tanggalPiket.push(tanggal);
     }
-}
-
-// ======================================================
-// HELPER EKSTRA: TUKAR JADWAL NGINAP AUTOMATIC
-// ======================================================
-
-function eksekusiTukarJadwalNginap(scheduleData) {
-    if (!CONFIG.tukarNginapKhusus || CONFIG.tukarNginapKhusus.length === 0) return;
-
-    CONFIG.tukarNginapKhusus.forEach(rule => {
-        const itemA = scheduleData.find(d => d.day === rule.tanggalA);
-        const itemB = scheduleData.find(d => d.day === rule.tanggalB);
-
-        if (!itemA || !itemB) return;
-
-        const indexA = itemA.nginap.findIndex(nama => namaSama(nama, rule.namaA));
-        const indexB = itemB.nginap.findIndex(nama => namaSama(nama, rule.namaB));
-
-        // Melakukan Swap jika kedua entri ditemukan di tanggal masing-masing
-        if (indexA !== -1 && indexB !== -1) {
-            itemA.nginap[indexA] = rule.namaB;
-            itemB.nginap[indexB] = rule.namaA;
-        }
-    });
 }
 
 // ======================================================
@@ -391,6 +432,19 @@ function generateSchedule() {
         });
     });
 
+    // ==================================================
+    // BARU: orang yang nginap Jumat/Sabtu di minggu X
+    // tidak boleh piket Senin-Jumat di minggu X+1
+    // ==================================================
+    function getOrangNginapWeekendSebelumnya(mingguKe) {
+        const mingguSebelumnya = nginapPerMinggu[mingguKe - 1];
+        if (!mingguSebelumnya) return new Set();
+        return new Set([
+            ...(mingguSebelumnya.jumat || []),
+            ...(mingguSebelumnya.sabtu || [])
+        ]);
+    }
+
     for (let day = 1; day <= jumlahHari; day++) {
         const tanggalObj = new Date(CONFIG.tahun, CONFIG.bulan - 1, day);
         const hari = tanggalObj.getDay();
@@ -415,12 +469,41 @@ function generateSchedule() {
             orangNginapHariIni = new Set(dayData.nginap);
         }
 
+        // Orang yang nginap Jumat/Sabtu minggu lalu -> dikecualikan
+        // dari piket Senin-Jumat minggu ini.
+        const orangNginapWeekendLalu = (hari >= 1 && hari <= 5)
+            ? getOrangNginapWeekendSebelumnya(mingguKe)
+            : new Set();
+
+        // BARU: orang yang nginap Jumat ATAU Sabtu di weekend yang SAMA
+        // tidak boleh piket Jumat itu juga (mis. piket Jumat lalu nginap Sabtu).
+        const orangNginapWeekendIni = (hari === 5)
+            ? gabungkanSet(
+                new Set(nginapPerMinggu[mingguKe]?.jumat || []),
+                new Set(nginapPerMinggu[mingguKe]?.sabtu || [])
+              )
+            : new Set();
+
         if (hari === 0 || hari === 6) {
             assignPiketWeekendAgoy(stats, dayData, assignedToday, orangNginapHariIni);
         } else if (hari === 5) {
-            assignPiketBiasa(CONFIG.piketJumat, stats, assignedToday, dayData, orangNginapHariIni, hari);
+            // Level 0 (paling ketat): semua aturan aktif.
+            // Level 1: lepas exclusion "nginap weekend minggu lalu" (aturan paling lunak).
+            // Level 2: lepas juga exclusion "nginap weekend ini" (sisakan cuma nginap hari ini sendiri, yang wajib).
+            const tingkatanJumat = [
+                gabungkanSet(orangNginapHariIni, orangNginapWeekendLalu, orangNginapWeekendIni),
+                gabungkanSet(orangNginapHariIni, orangNginapWeekendIni),
+                orangNginapHariIni
+            ];
+            assignPiketBiasa(CONFIG.piketJumat, stats, assignedToday, dayData, tingkatanJumat, hari);
         } else {
-            assignPiketBiasa(CONFIG.piketBiasa, stats, assignedToday, dayData, orangNginapHariIni, hari);
+            // Level 0: exclude nginap weekend minggu lalu.
+            // Level 1 (fallback): tidak ada exclusion tambahan (hanya aturan keras di bolehPiket()).
+            const tingkatanBiasa = [
+                gabungkanSet(orangNginapHariIni, orangNginapWeekendLalu),
+                new Set()
+            ];
+            assignPiketBiasa(CONFIG.piketBiasa, stats, assignedToday, dayData, tingkatanBiasa, hari);
         }
 
         schedule.push(dayData);
@@ -467,6 +550,6 @@ function renderCalendar(scheduleData) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const { schedule: hasilJadwal, stats } = generateSchedule();
+    const { schedule: hasilJadwal } = generateSchedule();
     renderCalendar(hasilJadwal);
 });
