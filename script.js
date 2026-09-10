@@ -19,21 +19,10 @@ const CONFIG = {
     bobotAgoy: 0.6,
     maksimalPiketAgoy: 4,
     minimalPiketAgoy: 4,
-
-    // MANIFEST TUKAR JADWAL NGINAP KHUSUS
-    // Menukar jadwal nginap Dimas (Tgl 11) dengan Fras (Tgl 25)
-    tukarNginapKhusus: [
-        {
-            namaA: "Dimas",
-            tanggalA: 11,
-            namaB: "Fras",
-            tanggalB: 25
-        }
-    ],
-
+    
     daftarNama: [
         "Haydar", "Baihaqi", "Gibran", "Rafly", "Roket",
-        "Lutfi", "Kausar", "Hakim", "Iksan", "Fras",
+        "Lutfi", "Kausar", "Hakim", "Iksan",
         "Dimas", "Sultan", "Agoy", "Mirja", "Ridho"
     ]
 };
@@ -57,13 +46,13 @@ function pseudoRandom() {
 
 const BOLEH_NGINAP = [
     "Haydar", "Baihaqi", "Gibran", "Rafly", "Roket",
-    "Lutfi", "Kausar", "Hakim", "Fras", "Dimas",
+    "Lutfi", "Kausar", "Hakim", "Dimas",
     "Sultan", "Mirja"
 ];
 
 const TIDAK_BOLEH_NGINAP = ["Agoy", "Iksan", "Ridho"];
 
-const HANYA_NGINAP_JUMAT = ["Fras", "Hakim", "Mirja", "Sultan", "Dimas"];
+const HANYA_NGINAP_JUMAT = ["Hakim", "Mirja", "Sultan", "Dimas"];
 
 // DILARANG PIKET/NGINAP KHUSUS TANGGAL 11 & 12
 const DILARANG_TGL_11_12 = ["Baihaqi", "Rafly", "Lutfi"];
@@ -436,9 +425,6 @@ function generateSchedule() {
 
         schedule.push(dayData);
     }
-
-    // Eksekusi Swap Khusus (Dimas Tgl 11 <-> Fras Tgl 25)
-    eksekusiTukarJadwalNginap(schedule);
 
     return { schedule, stats };
 }
