@@ -16,10 +16,9 @@ const CONFIG = {
     // Senin - Kamis
     piketBiasa: 1,
 
-    // KHUSUS AGOY (TEPAT 3 KALI SEBULAN)
     bobotAgoy: 0.6,
-    maksimalPiketAgoy: 3,
-    minimalPiketAgoy: 3,
+    maksimalPiketAgoy: 4,
+    minimalPiketAgoy: 4,
 
     // MANIFEST TUKAR JADWAL NGINAP KHUSUS
     // Menukar jadwal nginap Dimas (Tgl 11) dengan Fras (Tgl 25)
