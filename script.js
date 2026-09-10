@@ -1,3 +1,4 @@
+```js
 // ======================================================
 // KONFIGURASI
 // ======================================================
@@ -105,9 +106,9 @@ const TANGGAL_TIDAK_BOLEH_NGINAP = {
 
     Rafly: [11, 12],
 
-    Lutfi: [11, 12]
+    Lutfi: [11, 12],
 
-    Sultan: [11, 12]
+    Sultan: [11, 12],
 
     Dimas: [11, 12]
 
@@ -225,10 +226,8 @@ function getMingguKe(day) {
             day
         );
 
-
     const hari =
         tanggal.getDay();
-
 
     // Senin sebagai awal minggu
     const offsetKeSenin =
@@ -236,16 +235,13 @@ function getMingguKe(day) {
             ? -6
             : 1 - hari;
 
-
     const senin =
         new Date(tanggal);
-
 
     senin.setDate(
         tanggal.getDate() +
         offsetKeSenin
     );
-
 
     const awalBulan =
         new Date(
@@ -253,7 +249,6 @@ function getMingguKe(day) {
             CONFIG.bulan - 1,
             1
         );
-
 
     return Math.floor(
         (
@@ -334,7 +329,6 @@ function bolehNginap(
                 namaAturan
             ];
 
-
         if (
             tanggalTerlarang.includes(
                 tanggal
@@ -391,7 +385,6 @@ function bolehBersamaNginap(
                         person.name
                     )
             );
-
 
         if (!personMasuk) {
 
@@ -488,7 +481,6 @@ function cariTanggalWeekend(
                 CONFIG.bulan - 1,
                 day
             );
-
 
         const hari =
             tanggal.getDay();
@@ -792,7 +784,6 @@ function getSkorAgoy(
         Math.max(
             ...agoy.tanggalPiket
         );
-
 
     const jarak =
         tanggal -
@@ -1306,7 +1297,6 @@ function assignPiketBiasa(
                         "Agoy"
                     );
 
-
                 const bAgoy =
                     namaSama(
                         b.name,
@@ -1753,6 +1743,16 @@ function generateSchedule() {
 
 
     // ==================================================
+    // SIMPAN JADWAL KE LOCALSTORAGE
+    // ==================================================
+
+    localStorage.setItem(
+        getStorageKey(),
+        JSON.stringify(schedule)
+    );
+
+
+    // ==================================================
     // RENDER
     // ==================================================
 
@@ -1768,38 +1768,78 @@ function generateSchedule() {
         schedule
     );
 
-
-    console.log(
-        "Statistik:",
-        stats
-    );
+}
 
 
-    const agoy =
-        getAgoy(stats);
+// ======================================================
+// STORAGE
+// ======================================================
+
+function getStorageKey() {
+
+    return `jadwal-${CONFIG.tahun}-${CONFIG.bulan}`;
+
+}
 
 
-    if (agoy) {
+function loadSavedSchedule() {
 
-        console.log(
-            "================================"
+    const saved =
+        localStorage.getItem(
+            getStorageKey()
         );
 
-        console.log(
-            "TOTAL PIKET AGoy:",
-            agoy.piketCount
-        );
 
-        console.log(
-            "TANGGAL PIKET AGoy:",
-            agoy.tanggalPiket
-        );
+    if (!saved) {
 
-        console.log(
-            "================================"
-        );
+        return false;
 
     }
+
+
+    try {
+
+        schedule =
+            JSON.parse(saved);
+
+        renderCalendar();
+
+        console.log(
+            "Jadwal dimuat dari localStorage:",
+            schedule
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Gagal membaca jadwal tersimpan:",
+            error
+        );
+
+        localStorage.removeItem(
+            getStorageKey()
+        );
+
+        return false;
+
+    }
+
+}
+
+
+// ======================================================
+// HAPUS JADWAL TERSIMPAN
+// ======================================================
+
+function resetSchedule() {
+
+    localStorage.removeItem(
+        getStorageKey()
+    );
+
+    location.reload();
 
 }
 
@@ -1976,7 +2016,17 @@ document.addEventListener(
             "Sistem jadwal dimulai..."
         );
 
-        generateSchedule();
+
+        // Jika sudah ada jadwal tersimpan,
+        // jangan generate ulang.
+        if (
+            !loadSavedSchedule()
+        ) {
+
+            generateSchedule();
+
+        }
 
     }
 );
+```
