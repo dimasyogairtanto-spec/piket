@@ -107,6 +107,10 @@ const TANGGAL_TIDAK_BOLEH_NGINAP = {
 
     Lutfi: [11, 12]
 
+    Sultan: [11, 12]
+
+    Dimas: [11, 12]
+
 };
 
 
