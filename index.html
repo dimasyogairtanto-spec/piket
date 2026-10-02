@@ -1,23 +1,351 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Jadwal Piket & Nginap</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadwal Piket & Nginep - Oktober 2026</title>
+  <style>
+    :root {
+      --bg-color: #f4f7f6;
+      --card-bg: #ffffff;
+      --primary: #2c3e50;
+      --accent-nginep: #16a085;
+      --accent-piket: #2980b9;
+      --text-color: #333333;
+      --border-color: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      color: var(--primary);
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #666;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card-minggu {
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .card-header {
+      background-color: var(--primary);
+      color: white;
+      padding: 12px 16px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 8px 12px;
+      margin-top: 10px;
+    }
+
+    .title-nginep {
+      color: var(--accent-nginep);
+      border-bottom: 2px solid var(--accent-nginep);
+    }
+
+    .title-piket {
+      color: var(--accent-piket);
+      border-bottom: 2px solid var(--accent-piket);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .hari-tgl {
+      font-weight: 600;
+      color: #555;
+      width: 45%;
+    }
+
+    .nama-anggota {
+      color: #111;
+      text-transform: capitalize;
+    }
+
+    /* Highlight untuk petugas rutin */
+    .highlight-agoy {
+      font-weight: bold;
+      color: #d35400; /* Warna Oranye */
+    }
+
+    .highlight-dimas {
+      font-weight: bold;
+      color: #8e44ad; /* Warna Ungu */
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Sistem Jadwal Piket & Nginap</h1>
+  <div class="container">
+    <header>
+      <h1>Jadwal Piket & Nginep</h1>
+      <p>Periode Bulan Oktober 2026</p>
+    </header>
 
-    <!-- Tampilan Kalender Jadwal -->
-    <div class="card">
-        <h2>Jadwal Piket & Nginap</h2>
-        <div id="calendar" class="calendar-grid"></div>
+    <div class="grid-container">
+
+      <!-- MINGGU KE-1 -->
+      <div class="card-minggu">
+        <div class="card-header">Minggu Ke-1</div>
+
+        <div class="section-title title-nginep">Jadwal Nginep</div>
+        <table>
+          <tr>
+            <td class="hari-tgl">Jumat (02 Oct 2026)</td>
+            <td class="nama-anggota">Ridho, Kausar</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Sabtu (03 Oct 2026)</td>
+            <td class="nama-anggota">Gibran, Mirja</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Minggu (04 Oct 2026)</td>
+            <td class="nama-anggota">Ikhsan, Rafly</td>
+          </tr>
+        </table>
+
+        <div class="section-title title-piket">Jadwal Bersih-Bersih</div>
+        <table>
+          <tr>
+            <td class="hari-tgl">Selasa (29 Sep 2026)</td>
+            <td class="nama-anggota">Kausar</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Rabu (30 Sep 2026)</td>
+            <td class="nama-anggota highlight-agoy">Haydar</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Kamis (01 Oct 2026)</td>
+            <td class="nama-anggota">Icem/td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Jumat (02 Oct 2026)</td>
+            <td class="nama-anggota highlight-dimas">Luthfi</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- MINGGU KE-2 -->
+      <div class="card-minggu">
+        <div class="card-header">Minggu Ke-2</div>
+
+        <div class="section-title title-nginep">Jadwal Nginep</div>
+        <table>
+          <tr>
+            <td class="hari-tgl">Jumat (09 Oct 2026)</td>
+            <td class="nama-anggota">Ridho, Hakim</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Sabtu (10 Oct 2026)</td>
+            <td class="nama-anggota">Roket, Icem</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Minggu (11 Oct 2026)</td>
+            <td class="nama-anggota">Ikhsan, Luthfi</td>
+          </tr>
+        </table>
+
+        <div class="section-title title-piket">Jadwal Bersih-Bersih</div>
+        <table>
+          <tr>
+            <td class="hari-tgl">Selasa (06 Oct 2026)</td>
+            <td class="nama-anggota">Ikhsan</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Rabu (07 Oct 2026)</td>
+            <td class="nama-anggota highlight-agoy">Agoy</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Kamis (08 Oct 2026)</td>
+            <td class="nama-anggota">Sultan</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Jumat (09 Oct 2026)</td>
+            <td class="nama-anggota highlight-dimas">Dimas</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- MINGGU KE-3 -->
+      <div class="card-minggu">
+        <div class="card-header">Minggu Ke-3</div>
+
+        <div class="section-title title-nginep">Jadwal Nginep</div>
+        <table>
+          <tr>
+            <td class="hari-tgl">Jumat (16 Oct 2026)</td>
+            <td class="nama-anggota">Ridho, Baihaqi</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Sabtu (17 Oct 2026)</td>
+            <td class="nama-anggota">Haydar, Kausar</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Minggu (18 Oct 2026)</td>
+            <td class="nama-anggota">Ikhsan, Sultan</td>
+          </tr>
+        </table>
+
+        <div class="section-title title-piket">Jadwal Bersih-Bersih</div>
+        <table>
+          <tr>
+            <td class="hari-tgl">Selasa (13 Oct 2026)</td>
+            <td class="nama-anggota">Gibran</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Rabu (14 Oct 2026)</td>
+            <td class="nama-anggota highlight-agoy">Agoy</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Kamis (15 Oct 2026)</td>
+            <td class="nama-anggota">Ridho</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Jumat (16 Oct 2026)</td>
+            <td class="nama-anggota highlight-dimas">Dimas</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- MINGGU KE-4 -->
+      <div class="card-minggu">
+        <div class="card-header">Minggu Ke-4</div>
+
+        <div class="section-title title-nginep">Jadwal Nginep</div>
+        <table>
+          <tr>
+            <td class="hari-tgl">Jumat (23 Oct 2026)</td>
+            <td class="nama-anggota">Ridho, Gibran</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Sabtu (24 Oct 2026)</td>
+            <td class="nama-anggota">Mirja, Rafly</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Minggu (25 Oct 2026)</td>
+            <td class="nama-anggota">Ikhsan, Hakim</td>
+          </tr>
+        </table>
+
+        <div class="section-title title-piket">Jadwal Bersih-Bersih</div>
+        <table>
+          <tr>
+            <td class="hari-tgl">Selasa (20 Oct 2026)</td>
+            <td class="nama-anggota">Roket</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Rabu (21 Oct 2026)</td>
+            <td class="nama-anggota highlight-agoy">Agoy</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Kamis (22 Oct 2026)</td>
+            <td class="nama-anggota">Icem</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Jumat (23 Oct 2026)</td>
+            <td class="nama-anggota highlight-dimas">Dimas</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- MINGGU KE-5 -->
+      <div class="card-minggu">
+        <div class="card-header">Minggu Ke-5</div>
+
+        <div class="section-title title-nginep">Jadwal Nginep</div>
+        <table>
+          <tr>
+            <td class="hari-tgl">Jumat (30 Oct 2026)</td>
+            <td class="nama-anggota">Ridho, Roket</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Sabtu (31 Oct 2026)</td>
+            <td class="nama-anggota">Icem, Luthfi</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Minggu (01 Nov 2026)</td>
+            <td class="nama-anggota">Ikhsan, Baihaqi</td>
+          </tr>
+        </table>
+
+        <div class="section-title title-piket">Jadwal Bersih-Bersih</div>
+        <table>
+          <tr>
+            <td class="hari-tgl">Selasa (27 Oct 2026)</td>
+            <td class="nama-anggota">Sultan</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Rabu (28 Oct 2026)</td>
+            <td class="nama-anggota highlight-agoy">Agoy</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Kamis (29 Oct 2026)</td>
+            <td class="nama-anggota">Haydar</td>
+          </tr>
+          <tr>
+            <td class="hari-tgl">Jumat (30 Oct 2026)</td>
+            <td class="nama-anggota highlight-dimas">Dimas</td>
+          </tr>
+        </table>
+      </div>
+
     </div>
-</div>
+  </div>
 
-<script src="script.js"></script>
 </body>
 </html>
