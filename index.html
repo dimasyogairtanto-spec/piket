@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jadwal Piket & Nginep - Oktober 2026</title>
+  <title>Jadwal Piket & Nginep - November 2026</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --bg-color: #f4f7f6;
@@ -15,69 +19,27 @@
       --border-color: #e2e8f0;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
     body {
       background-color: var(--bg-color);
       color: var(--text-color);
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    header h1 {
-      color: var(--primary);
-      font-size: 2rem;
-      margin-bottom: 8px;
-    }
-
-    header p {
-      color: #666;
-    }
-
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .card-minggu {
       background: var(--card-bg);
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
       border: 1px solid var(--border-color);
     }
 
-    .card-header {
-      background-color: var(--primary);
-      color: white;
-      padding: 12px 16px;
-      font-weight: bold;
-      font-size: 1.1rem;
-      text-align: center;
+    .card-minggu:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
-    .section-title {
-      font-size: 0.9rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 8px 12px;
-      margin-top: 10px;
+    .card-header-bg {
+      background-color: var(--primary);
     }
 
     .title-nginep {
@@ -90,262 +52,529 @@
       border-bottom: 2px solid var(--accent-piket);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    th, td {
-      padding: 8px 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    .hari-tgl {
-      font-weight: 600;
-      color: #555;
-      width: 45%;
-    }
-
-    .nama-anggota {
-      color: #111;
-      text-transform: capitalize;
-    }
-
-    /* Highlight untuk petugas rutin */
+    /* Highlight khusus untuk Agoy & Dimas */
     .highlight-agoy {
       font-weight: bold;
-      color: #d35400; /* Warna Oranye */
+      color: #d35400; /* Oranye */
+      background-color: #fef5e7;
+      padding: 2px 6px;
+      border-radius: 4px;
     }
 
     .highlight-dimas {
       font-weight: bold;
-      color: #8e44ad; /* Warna Ungu */
+      color: #8e44ad; /* Ungu */
+      background-color: #f4ecf7;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .search-matched {
+      background-color: #fef08a !important;
+      color: #854d0e !important;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      box-shadow: 0 0 0 2px #facc15;
     }
   </style>
 </head>
-<body>
+<body class="min-h-screen p-4 md:p-8">
 
-  <div class="container">
-    <header>
-      <h1>Jadwal Piket & Nginep</h1>
-      <p>Periode Bulan Oktober 2026</p>
+  <div class="max-w-6xl mx-auto">
+    <!-- Header Section -->
+    <header class="text-center mb-8">
+      <div class="inline-flex items-center justify-center p-3 bg-slate-800 text-white rounded-full mb-3 shadow-md">
+        <i class="fa-solid fa-calendar-days text-2xl px-1"></i>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold text-slate-800 tracking-tight">Jadwal Piket & Nginep</h1>
+      <p class="text-slate-600 mt-2 text-base md:text-lg">Periode Akhir Tahun (November - Desember 2026)</p>
     </header>
 
-    <div class="grid-container">
+    <!-- Search & Control Bar -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-8 max-w-2xl mx-auto">
+      <div class="relative flex items-center">
+        <i class="fa-solid fa-magnifying-glass absolute left-4 text-slate-400"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          onkeyup="filterSchedule()" 
+          placeholder="Cari nama anggota (contoh: Gibran, Agoy, Rafly)..." 
+          class="w-full pl-11 pr-10 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent text-sm md:text-base"
+        />
+        <button id="clearBtn" onclick="clearSearch()" class="hidden absolute right-3 text-slate-400 hover:text-slate-600 p-1">
+          <i class="fa-solid fa-circle-xmark text-lg"></i>
+        </button>
+      </div>
+      <div id="searchInfo" class="text-xs text-slate-5-00 mt-2 text-center hidden">
+        Menampilkan hasil untuk: <span id="searchTerm" class="font-semibold text-slate-700"></span>
+      </div>
+    </div>
+
+    <!-- Container Grid Kartu Minggu -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="scheduleGrid">
 
       <!-- MINGGU KE-1 -->
-      <div class="card-minggu">
-        <div class="card-header">Minggu Ke-1</div>
+      <div class="card-minggu overflow-hidden" data-week="1">
+        <div class="card-header-bg text-white py-3 px-4 text-center font-bold text-lg flex items-center justify-center gap-2">
+          <i class="fa-solid fa-calendar-week text-sm
 
-        <div class="section-title title-nginep">Jadwal Nginep</div>
-        <table>
-          <tr>
-            <td class="hari-tgl">Jumat (02 Oct 2026)</td>
-            <td class="nama-anggota">Ikhsan, Kausar</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Sabtu (03 Oct 2026)</td>
-            <td class="nama-anggota">Gibran, Mirja</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Minggu (04 Oct 2026)</td>
-            <td class="nama-anggota">Ridho, Rafly</td>
-          </tr>
-        </table>
+opacity-80"></i> Minggu Ke-1
+        </div>
 
-        <div class="section-title title-piket">Jadwal Bersih-Bersih</div>
-        <table>
-          <tr>
-            <td class="hari-tgl">Selasa (29 Sep 2026)</td>
-            <td class="nama-anggota">Kausar</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Rabu (30 Sep 2026)</td>
-            <td class="nama-anggota highlight-agoy">Haydar</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Kamis (01 Oct 2026)</td>
-            <td class="nama-anggota">Icem/td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Jumat (02 Oct 2026)</td>
-            <td class="nama-anggota highlight-dimas">Luthfi</td>
-          </tr>
-        </table>
+        <div class="p-4 space-y-4">
+          <!-- Nginep -->
+          <div>
+            <div class="section-title title-nginep pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-bed text-sm"></i> Jadwal Nginep
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Jumat (30 Oct)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ikhsan, Roket</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Sabtu (31 Oct)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Baihaqi, icem</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Minggu (01 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ridho, Haydar</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bersih-bersih -->
+          <div>
+            <div class="section-title title-piket pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-broom text-sm"></i> Jadwal Bersih-Bersih
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Selasa (27 Oct)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Gibran</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Rabu (28 Oct)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-agoy">Agoy</span></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Kamis (29 Oct)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Kausar</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Jumat (30 Oct)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-dimas">Dimas</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- MINGGU KE-2 -->
-      <div class="card-minggu">
-        <div class="card-header">Minggu Ke-2</div>
+      <div class="card-minggu overflow-hidden" data-week="2">
+        <div class="card-header-bg text-white py-3 px-4 text-center font-bold text-lg flex items-center justify-center gap-2">
+          <i class="fa-solid fa-calendar-week text-sm opacity-80"></i> Minggu Ke-2
+        </div>
 
-        <div class="section-title title-nginep">Jadwal Nginep</div>
-        <table>
-          <tr>
-            <td class="hari-tgl">Jumat (09 Oct 2026)</td>
-            <td class="nama-anggota">Ikhsan, Hakim</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Sabtu (10 Oct 2026)</td>
-            <td class="nama-anggota">Roket, Icem</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Minggu (11 Oct 2026)</td>
-            <td class="nama-anggota">Ridho, Luthfi</td>
-          </tr>
-        </table>
+        <div class="p-4 space-y-4">
+          <!-- Nginep -->
+          <div>
+            <div class="section-title title-nginep pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-bed text-sm"></i> Jadwal Nginep
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Jumat (06 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ikhsan, Rafly</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Sabtu (07 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Hakim, Kausar</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Minggu (08 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ridho, Sultan</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-        <div class="section-title title-piket">Jadwal Bersih-Bersih</div>
-        <table>
-          <tr>
-            <td class="hari-tgl">Selasa (06 Oct 2026)</td>
-            <td class="nama-anggota">sultan</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Rabu (07 Oct 2026)</td>
-            <td class="nama-anggota highlight-agoy">Agoy</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Kamis (08 Oct 2026)</td>
-            <td class="nama-anggota">Ikhsan</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Jumat (09 Oct 2026)</td>
-            <td class="nama-anggota highlight-dimas">Dimas</td>
-          </tr>
-        </table>
+          <!-- Bersih-bersih -->
+          <div>
+            <div class="section-title title-piket pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-broom text-sm"></i> Jadwal
+
+Bersih-Bersih
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Selasa (03 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Gibran</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Rabu (04 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-agoy">Agoy</span></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Kamis (05 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Icem</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Jumat (06 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-dimas">Dimas</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- MINGGU KE-3 -->
-      <div class="card-minggu">
-        <div class="card-header">Minggu Ke-3</div>
+      <div class="card-minggu overflow-hidden" data-week="3">
+        <div class="card-header-bg text-white py-3 px-4 text-center font-bold text-lg flex items-center justify-center gap-2">
+          <i class="fa-solid fa-calendar-week text-sm opacity-80"></i> Minggu Ke-3
+        </div>
 
-        <div class="section-title title-nginep">Jadwal Nginep</div>
-        <table>
-          <tr>
-            <td class="hari-tgl">Jumat (16 Oct 2026)</td>
-            <td class="nama-anggota">Ikhsan, Baihaqi</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Sabtu (17 Oct 2026)</td>
-            <td class="nama-anggota">Haydar, Kausar</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Minggu (18 Oct 2026)</td>
-            <td class="nama-anggota">Ridho, Sultan</td>
-          </tr>
-        </table>
+        <div class="p-4 space-y-4">
+          <!-- Nginep -->
+          <div>
+            <div class="section-title title-nginep pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-bed text-sm"></i> Jadwal Nginep
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Jumat (13 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ikhsan, Baihaqi</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Sabtu (14 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Kausar, Haydar</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Minggu (15 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ridho, Sultan</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-        <div class="section-title title-piket">Jadwal Bersih-Bersih</div>
-        <table>
-          <tr>
-            <td class="hari-tgl">Selasa (13 Oct 2026)</td>
-            <td class="nama-anggota">Gibran</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Rabu (14 Oct 2026)</td>
-            <td class="nama-anggota highlight-agoy">Agoy</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Kamis (15 Oct 2026)</td>
-            <td class="nama-anggota">Roket</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Jumat (16 Oct 2026)</td>
-            <td class="nama-anggota highlight-dimas">Dimas</td>
-          </tr>
-        </table>
+          <!-- Bersih-bersih -->
+          <div>
+            <div class="section-title title-piket pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-broom text-sm"></i> Jadwal Bersih-Bersih
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Selasa (10 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Roket</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Rabu (11 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-agoy">Agoy</span></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Kamis (12 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Rafly</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Jumat (13 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-dimas">Dimas</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- MINGGU KE-4 -->
-      <div class="card-minggu">
-        <div class="card-header">Minggu Ke-4</div>
+      <div class="card-minggu overflow-hidden" data-week="4">
+        <div class="card-header-bg text-white py-3 px-4 text-center font-bold text-lg flex items-center justify-center gap-2">
+          <i class="fa-solid fa-calendar-week text-sm opacity-80"></i>
 
-        <div class="section-title title-nginep">Jadwal Nginep</div>
-        <table>
-          <tr>
-            <td class="hari-tgl">Jumat (23 Oct 2026)</td>
-            <td class="nama-anggota">Ikhsan, Gibran</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Sabtu (24 Oct 2026)</td>
-            <td class="nama-anggota">Mirja, Rafly</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Minggu (25 Oct 2026)</td>
-            <td class="nama-anggota">Ridho, Hakim</td>
-          </tr>
-        </table>
+Minggu Ke-4
+        </div>
 
-        <div class="section-title title-piket">Jadwal Bersih-Bersih</div>
-        <table>
-          <tr>
-            <td class="hari-tgl">Selasa (20 Oct 2026)</td>
-            <td class="nama-anggota">Icem</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Rabu (21 Oct 2026)</td>
-            <td class="nama-anggota highlight-agoy">Agoy</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Kamis (22 Oct 2026)</td>
-            <td class="nama-anggota">sUltan</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Jumat (23 Oct 2026)</td>
-            <td class="nama-anggota highlight-dimas">Dimas</td>
-          </tr>
-        </table>
+        <div class="p-4 space-y-4">
+          <!-- Nginep -->
+          <div>
+            <div class="section-title title-nginep pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-bed text-sm"></i> Jadwal Nginep
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Jumat (20 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ikhsan, Gibran</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Sabtu (21 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Rafly, Hakim</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Minggu (22 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ridho, Roket</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bersih-bersih -->
+          <div>
+            <div class="section-title title-piket pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-broom text-sm"></i> Jadwal Bersih-Bersih
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Selasa (17 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Icem</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Rabu (18 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-agoy">Agoy</span></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Kamis (19 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Baihaqi</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Jumat (20 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-dimas">Dimas</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- MINGGU KE-5 -->
-      <div class="card-minggu">
-        <div class="card-header">Minggu Ke-5</div>
+      <div class="card-minggu overflow-hidden" data-week="5">
+        <div class="card-header-bg text-white py-3 px-4 text-center font-bold text-lg flex items-center justify-center gap-2">
+          <i class="fa-solid fa-calendar-week text-sm opacity-80"></i> Minggu Ke-5
+        </div>
 
-        <div class="section-title title-nginep">Jadwal Nginep</div>
-        <table>
-          <tr>
-            <td class="hari-tgl">Jumat (30 Oct 2026)</td>
-            <td class="nama-anggota">Ikhsan, Roket</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Sabtu (31 Oct 2026)</td>
-            <td class="nama-anggota">Icem, Baihaqi</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Minggu (01 Nov 2026)</td>
-            <td class="nama-anggota">Ridho, Haydar</td>
-          </tr>
-        </table>
+        <div class="p-4 space-y-4">
+          <!-- Nginep -->
+          <div>
+            <div class="section-title title-nginep pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-bed text-sm"></i> Jadwal Nginep
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Jumat (27 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ikhsan, Icem</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Sabtu (28 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Baihaqi, Haydar</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Minggu (29 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ridho, Sultan</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-        <div class="section-title title-piket">Jadwal Bersih-Bersih</div>
-        <table>
-          <tr>
-            <td class="hari-tgl">Selasa (27 Oct 2026)</td>
-            <td class="nama-anggota">Gibran</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Rabu (28 Oct 2026)</td>
-            <td class="nama-anggota highlight-agoy">Agoy</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Kamis (29 Oct 2026)</td>
-            <td class="nama-anggota">Mirja</td>
-          </tr>
-          <tr>
-            <td class="hari-tgl">Jumat (30 Oct 2026)</td>
-            <td class="nama-anggota highlight-dimas">Dimas</td>
-          </tr>
-        </table>
+          <!-- Bersih-bersih -->
+          <div>
+            <div class="section-title title-piket pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-broom text-sm"></i> Jadwal Bersih-Bersih
+
+</div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Selasa (24 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Hakim</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Rabu (25 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-agoy">Agoy</span></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Kamis (26 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Roket</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Jumat (27 Nov)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-dimas">Dimas</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- MINGGU KE-6 -->
+      <div class="card-minggu overflow-hidden" data-week="6">
+        <div class="card-header-bg text-white py-3 px-4 text-center font-bold text-lg flex items-center justify-center gap-2">
+          <i class="fa-solid fa-calendar-week text-sm opacity-80"></i> Minggu Ke-6
+        </div>
+
+        <div class="p-4 space-y-4">
+          <!-- Nginep -->
+          <div>
+            <div class="section-title title-nginep pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-bed text-sm"></i> Jadwal Nginep
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Jumat (04 Dec)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ikhsan, Kausar</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Sabtu (05 Dec)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Gibran, Rafly</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Minggu (06 Dec)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Ridho, Hakim</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bersih-bersih -->
+          <div>
+            <div class="section-title title-piket pb-1 font-bold text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-broom text-sm"></i> Jadwal Bersih-Bersih
+            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium w-1/2">Selasa (01 Dec)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Icem</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Rabu (02 Dec)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-agoy">Agoy</span></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Kamis (03 Dec)</td>
+                  <td class="py-2 text-slate-900 nama-cell">Baihaqi</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-slate-500 font-medium">Jumat (04 Dec)</td>
+                  <td class="py-2 text-slate-900 nama-cell"><span class="highlight-dimas">Dimas</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
     </div>
+
+    <!-- Empty Result State -->
+    <div id="noResults" class="hidden text-center py-12 bg-white rounded-xl shadow-sm border border-slate-200 mt-4">
+      <i class="fa-solid fa-user-slash text-4xl text-slate-300 mb-3"></i>
+      <p class="text-slate-600 font-semibold">Nama anggota tidak ditemukan dalam
+
+jadwal</p>
+      <p class="text-slate-400 text-sm mt-1">Coba ketikkan nama anggota lain.</p>
+    </div>
+
+    <footer class="mt-12 text-center text-xs text-slate-400 border-t border-slate-200 pt-6">
+      <p>Aplikasi Jadwal Piket & Nginep © 2026</p>
+    </footer>
   </div>
 
+  <script>
+    // Menyimpan HTML asli untuk pemulihan setelah pencarian
+    const originalContentMap = new Map();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.nama-cell').forEach((cell, idx) => {
+        originalContentMap.set(cell, cell.innerHTML);
+      });
+    });
+
+    function filterSchedule() {
+      const input = document.getElementById('searchInput');
+      const filter = input.value.trim().toLowerCase();
+      const clearBtn = document.getElementById('clearBtn');
+      const searchInfo = document.getElementById('searchInfo');
+      const searchTermSpan = document.getElementById('searchTerm');
+      const cards = document.querySelectorAll('.card-minggu');
+      const noResults = document.getElementById('noResults');
+
+      if (filter.length > 0) {
+        clearBtn.classList.remove('hidden');
+        searchInfo.classList.remove('hidden');
+        searchTermSpan.textContent = `"${input.value}"`;
+      } else {
+        clearBtn.classList.add('hidden');
+        searchInfo.classList.add('hidden');
+      }
+
+      let hasMatches = false;
+
+      cards.forEach(card => {
+        let cardHasMatch = false;
+        const cells = card.querySelectorAll('.nama-cell');
+
+        cells.forEach(cell => {
+          // Kembalikan ke konten awal sebelum pencarian
+          cell.innerHTML = originalContentMap.get(cell);
+
+          if (filter.length > 0) {
+            const rawText = cell.textContent || cell.innerText;
+            if (rawText.toLowerCase().includes(filter)) {
+              cardHasMatch = true;
+              
+              // Sorot teks nama yang cocok secara visual
+              const regex = new RegExp(`(${escapeRegExp(filter)})`, 'gi');
+              const textNodes = Array.from(cell.childNodes);
+              
+              // Proses penggantian teks yang ter-highlight
+              cell.innerHTML = cell.innerHTML.replace(regex, '<mark class="search-matched">$1</mark>');
+            }
+          }
+        });
+
+        if (filter.length === 0) {
+          card.style.display = '';
+          card.style.opacity = '1';
+        } else if (cardHasMatch) {
+          card.style.display = '';
+          card.style.opacity = '1';
+          hasMatches = true;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (filter.length > 0 && !hasMatches) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      filterSchedule();
+      input.focus();
+    }
+
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+  </script>
 </body>
 </html>
+
+
